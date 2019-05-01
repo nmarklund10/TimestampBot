@@ -6,7 +6,7 @@ const
   app = express().use(bodyParser.json()); // creates express http server
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
+app.listen(process.env.PORT, () => console.log('webhook is listening'));
 
 // Creates the endpoint for our webhook
 app.post('/webhook', (req, res) => {
@@ -31,7 +31,7 @@ app.post('/webhook', (req, res) => {
 
 // Adds support for GET requests to our webhook
 app.get('/webhook', (req, res) => {
-  let VERIFY_TOKEN = "<YOUR_VERIFY_TOKEN>";
+  let VERIFY_TOKEN = process.env.TOKEN;
   // Parse the query params
   let mode = req.query['hub.mode'];
   let token = req.query['hub.verify_token'];
