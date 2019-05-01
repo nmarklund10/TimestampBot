@@ -1,2 +1,2 @@
 # TimestampBot
-Facebook messenger bot that has same functionality has FakeTimestamp
+Facebook messenger bot that has same functionality as FakeTimestamp
