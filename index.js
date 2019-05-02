@@ -3,12 +3,12 @@
 const
   express = require('express'),
   bodyParser = require('body-parser'),
-  request = require('request');
+  request = require('request'),
+  PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
   app = express().use(bodyParser.json()); // creates express http server
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT, () => console.log('webhook is listening'));
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
 // Creates the endpoint for our webhook
 app.post('/webhook', (req, res) => {
