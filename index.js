@@ -69,7 +69,7 @@ app.get('/webhook', (req, res) => {
 function handleMessage(sender_psid, received_message) {
   let response;
   var file = {};
-  let filename = `${sender_psid}.jpg`;
+  let filename = `/tmp/${sender_psid}.jpg`;
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
