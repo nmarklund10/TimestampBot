@@ -69,8 +69,7 @@ app.get('/webhook', (req, res) => {
 function handleMessage(sender_psid, received_message) {
   let response;
   var file = {};
-  console.log("Images");
-  console.log(images);
+  let filename = `./${sender_psid}.jpg`;
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
@@ -81,21 +80,21 @@ function handleMessage(sender_psid, received_message) {
     }
   } else if (received_message.attachments) {
     let attachment_url = received_message.attachments[0].payload.url;
-    images[sender_psid] = attachment_url;
+    request(url).pipe(fs.createWriteStream(filename))
+    images[sender_psid] = 1;
     response = {
       'text': 'Send your caption now!'
     }
   }
   else {
     let caption = received_message.text;
-    let filename = `./${sender_psid}.jpg`;
     response = {
       'attachment': {
         'type': 'image',
         'payload': {'is_reusable': true}
       }
     }
-    addCaption(filename, images[sender_psid], caption);
+    addCaption(filename, caption);
     file = fs.createReadStream(filename);
   }
   // Sends the response message
@@ -144,10 +143,9 @@ function isEmpty(obj) {
   return true;
 }
 
-function addCaption(filename, url, caption) {
+function addCaption(filename, caption) {
   var fnt = pimage.registerFont('./clockfont.ttf','Clock');
   fnt.load(() => {
-    request(url).pipe(fs.createWriteStream(filename))
     pimage.decodeJPEGFromStream(fs.createReadStream(filename)).then((img) => {
       var ctx = img.getContext('2d');
       ctx.fillStyle = '#ffffff';
