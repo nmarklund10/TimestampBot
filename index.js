@@ -151,7 +151,9 @@ function addCaption(filename, caption) {
       ctx.fillStyle = '#ffffff';
       ctx.font = `${FONT}pt 'Clock'`;
       ctx.fillText(caption, 80, img.height * 0.8);
-      pimage.encodeJPEGToStream(img, fs.createWriteStream(filename))
+      pimage.encodeJPEGToStream(img, fs.createWriteStream(filename)).then(() => {
+        console.log(`/tmp/${sender_psid}.jpg modified!`);
+      });
     });
   });
 }
@@ -159,7 +161,7 @@ function addCaption(filename, caption) {
 function testPI() {
   var fnt = pimage.registerFont('./clockfont.ttf','Clock');
   fnt.load(() => {
-      pimage.decodeJPEGFromStream(fs.createReadStream('C:\\Users\\nmark\\Downloads\\test.jpg')).then((img) => {
+      pimage.decodeJPEGFromStream(fs.createReadStream('C:\\Users\\nmark\\Downloads\\test_out.jpg')).then((img) => {
         var ctx = img.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.font = `${FONT}pt 'Clock'`;
