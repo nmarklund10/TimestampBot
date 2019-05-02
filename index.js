@@ -76,11 +76,18 @@ function handleMessage(sender_psid, received_message) {
   }
   else if (received_message.attachments) {
     // Gets the URL of the message attachment
-    let attachment_url = received_message.attachments[0].payload.url;
-    response = {
-      'attachment': {
-        'type': 'image',
-        'payload': {'is_reusable': true}
+    if (!received_message.text) {
+      response = {
+        'text': 'Add a caption to your picture!'
+      }
+    }
+    else {
+      let attachment_url = received_message.attachments[0].payload.url;
+      response = {
+        'attachment': {
+          'type': 'image',
+          'payload': {'is_reusable': true}
+        }
       }
     }
   }
