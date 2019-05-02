@@ -67,7 +67,7 @@ function handleMessage(sender_psid, received_message) {
   let response;
   var file = {};
   // Check if the message contains text
-  if (!images[sender_psid]) {
+  if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
     response = {
       'text': "Welcome to Timestamp bot. This bot will \
@@ -89,7 +89,7 @@ function handleMessage(sender_psid, received_message) {
         'payload': {'is_reusable': true}
       }
     }
-    file = addCaption(attachment_url, caption);
+    file = addCaption(sender_psid, attachment_url, caption);
   }
   // Sends the response message
   callSendAPI(sender_psid, response, file);
@@ -123,11 +123,23 @@ function callSendAPI(sender_psid, response, file) {
       console.error("Unable to send message:" + err);
     }
   });
+  if (!isEmpty(file)) {
+    delete images[sender_psid];
+    fs.unlink(`./${sender_psid}.jpg`, () => console.log(`./${sender_psid}.jpg deleted!`));
+  }
 }
 
-function addCaption(url, caption) {
+function isEmpty(obj) {
+  for(var key in obj) {
+      if(obj.hasOwnProperty(key))
+          return false;
+  }
+  return true;
+}
+
+function addCaption(sender_psid, url, caption) {
   var fnt = pimage.registerFont('./clockfont.ttf','Clock');
-  let filename = './file.jpg';
+  let filename = `./${sender_psid}.jpg`;
   fnt.load(() => {
     request(url).pipe(fs.createWriteStream(filename))
     pimage.decodeJPEGFromStream(fs.createReadStream(filename)).then((img) => {
