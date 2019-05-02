@@ -79,7 +79,7 @@ function handleMessage(sender_psid, received_message) {
               you send. Start by sending a pic!"
     }
   } else if (received_message.attachments) {
-    let attachment_url = received_message.attachments[0].payload.url;
+    let url = received_message.attachments[0].payload.url;
     request(url).pipe(fs.createWriteStream(filename))
     images[sender_psid] = 1;
     response = {
