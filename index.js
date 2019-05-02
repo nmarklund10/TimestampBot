@@ -12,7 +12,6 @@ app.listen(process.env.PORT, () => console.log('webhook is listening'));
 
 // Creates the endpoint for our webhook
 app.post('/webhook', (req, res) => {
-
   let body = req.body;
   // Checks this is an event from a page subscription
   if (body.object === 'page') {
@@ -109,3 +108,29 @@ function callSendAPI(sender_psid, response) {
     }
   });
 }
+
+// function testJimp() {
+//   var fileName = 'C:\\Users\\nmark\\Downloads\\test.jpg';
+//   var output = 'C:\\Users\\nmark\\Downloads\\test_out.jpg';
+//   var imageCaption = '10:45';
+//   var loadedImage;
+//   jimp.read(fileName)
+//     .then(function (image) {
+//       loadedImage = image;
+//       return jimp.loadFont('C:\\Users\\nmark\\Downloads\\clockfont.fnt');
+//     })
+//     .then(function (font) {
+//       var w = loadedImage.bitmap.width;
+//       var h = loadedImage.bitmap.height;
+//       var textWidth = jimp.measureText(font, imageCaption);
+//       var textHeight = jimp.measureTextHeight(font, imageCaption);
+//       loadedImage.print(
+//         font, w/2 - textWidth/2, h/2 - textHeight/2, imageCaption, textWidth, textHeight).write(output);
+//     })
+//     .catch(function (err) {
+//       console.error(err);
+//     });
+// }
+
+
+
