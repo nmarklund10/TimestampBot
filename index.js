@@ -83,12 +83,14 @@ function handleMessage(sender_psid, received_message) {
     }
     else {
       let attachment_url = received_message.attachments[0].payload.url;
+      let caption = received_message.text;
       response = {
         'attachment': {
           'type': 'image',
           'payload': {'is_reusable': true}
         }
       }
+      file = addCaption(attachment_url, caption);
     }
   }
   // Sends the response message
@@ -125,6 +127,22 @@ function callSendAPI(sender_psid, response, file) {
   });
 }
 
+function addCaption(url, caption) {
+  var fnt = pimage.registerFont('./clockfont.ttf','Clock');
+  let filename = './file.jpg';
+  fnt.load(() => {
+    request(url).pipe(fs.createWriteStream(filename))
+    pimage.decodeJPEGFromStream(fs.createReadStream(filename)).then((img) => {
+      var ctx = img.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `${FONT}pt 'Clock'`;
+      ctx.fillText(caption, 80, img.height * 0.8);
+      pimage.encodeJPEGToStream(img, fs.createWriteStream(filename))
+    });
+  });
+  return fs.createReadStream(filename);
+}
+
 function testPI() {
   var fnt = pimage.registerFont('./clockfont.ttf','Clock');
   fnt.load(() => {
@@ -132,8 +150,6 @@ function testPI() {
         var ctx = img.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.font = `${FONT}pt 'Clock'`;
-        console.log(img.width);
-        console.log(img.height);
         ctx.fillText("10:45", 80, img.height * 0.8);
         pimage.encodeJPEGToStream(img,fs.createWriteStream('C:\\Users\\nmark\\Downloads\\test_out.jpg')).then(() => {
           console.log("done writing");
