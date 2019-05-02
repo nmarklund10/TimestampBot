@@ -4,6 +4,7 @@ const
   express = require('express'),
   bodyParser = require('body-parser'),
   request = require('request'),
+  pimage = require('pureimage'),
   PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
   app = express().use(bodyParser.json()); // creates express http server
 
@@ -63,21 +64,28 @@ app.get('/webhook', (req, res) => {
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
   let response;
+  var file = {};
   // Check if the message contains text
   if (!received_message.attachments) {
     // Create the payload for a basic text message
     response = {
       'text': "Welcome to Timestamp bot.  This bot will \
               add a caption to the bottom of a picture \
-              you send.\n\nEXAMPLE USAGE:\n9:48 AM\n[YOUR_PICTURE]"
+              you send.\n\nEXAMPLE USAGE:\n9:48\n[YOUR_PICTURE]"
     }
   }
   else if (received_message.attachments) {
     // Gets the URL of the message attachment
     let attachment_url = received_message.attachments[0].payload.url;
+    response = {
+      'attachment': {
+        'type': 'image',
+        'payload': {'is_reusable': true}
+      }
+    }
   }
   // Sends the response message
-  callSendAPI(sender_psid, response);
+  callSendAPI(sender_psid, response, file);
 }
 
 // Handles messaging_postbacks events
@@ -86,13 +94,14 @@ function handlePostback(sender_psid, received_postback) {
 }
 
 // Sends response messages via the Send API
-function callSendAPI(sender_psid, response) {
+function callSendAPI(sender_psid, response, file) {
   // Construct the message body
   let request_body = {
     'recipient': {
       'id': sender_psid
     },
-    'message': response
+    'message': response,
+    'filedata': file
   }
   // Send the HTTP request to the Messenger Platform
   request({
@@ -106,6 +115,23 @@ function callSendAPI(sender_psid, response) {
     } else {
       console.error("Unable to send message:" + err);
     }
+  });
+}
+
+function testPI() {
+  var fnt = pimage.registerFont('./clockfont.ttf','Clock');
+  fnt.load(() => {
+      pimage.decodeJPEGFromStream(fs.createReadStream('test.jpg')).then((img) => {
+        var ctx = img.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `${FONT}pt 'Clock'`;
+        console.log(img.width);
+        console.log(img.height);
+        ctx.fillText("10:45", 80, img.height * 0.8);
+        pimage.encodeJPEGToStream(img,fs.createWriteStream('C:\\Users\\nmark\\Downloads\\test_out.jpg')).then(() => {
+          console.log("done writing");
+        });
+      });
   });
 }
 
