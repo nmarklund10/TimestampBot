@@ -61,37 +61,35 @@ app.get('/webhook', (req, res) => {
   }
 });
 
+var images = new Object();
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
   let response;
   var file = {};
   // Check if the message contains text
-  if (!received_message.attachments) {
+  if (!images[sender_psid]) {
     // Create the payload for a basic text message
     response = {
-      'text': "Welcome to Timestamp bot.  This bot will \
+      'text': "Welcome to Timestamp bot. This bot will \
               add a caption to the bottom of a picture \
-              you send.\n\nEXAMPLE USAGE:\n9:48\n[YOUR_PICTURE]"
+              you send. Start by sending a pic!"
+    }
+  } else if (received_message.attachments) {
+    let attachment_url = received_message.attachments[0].payload.url;
+    images[sender_psid] = attachment_url;
+    response = {
+      'text': 'Send your caption now!'
     }
   }
-  else if (received_message.attachments) {
-    // Gets the URL of the message attachment
-    if (!received_message.text) {
-      response = {
-        'text': 'Add a caption to your picture!'
+  else {
+    let caption = received_message.text;
+    response = {
+      'attachment': {
+        'type': 'image',
+        'payload': {'is_reusable': true}
       }
     }
-    else {
-      let attachment_url = received_message.attachments[0].payload.url;
-      let caption = received_message.text;
-      response = {
-        'attachment': {
-          'type': 'image',
-          'payload': {'is_reusable': true}
-        }
-      }
-      file = addCaption(attachment_url, caption);
-    }
+    file = addCaption(attachment_url, caption);
   }
   // Sends the response message
   callSendAPI(sender_psid, response, file);
