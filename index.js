@@ -152,7 +152,7 @@ function addCaption(filename, caption) {
       ctx.font = `${FONT}pt 'Clock'`;
       ctx.fillText(caption, 80, img.height * 0.8);
       pimage.encodeJPEGToStream(img, fs.createWriteStream(filename)).then(() => {
-        console.log(`/tmp/${sender_psid}.jpg modified!`);
+        console.log(`${filename} modified!`);
       });
     });
   });
