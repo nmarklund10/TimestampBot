@@ -8,6 +8,8 @@ const
   PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
   app = express().use(bodyParser.json()); // creates express http server
 
+var images = new Object();
+
 // Sets server port and logs message on success
 app.listen(process.env.PORT, () => console.log('webhook is listening'));
 
@@ -61,11 +63,12 @@ app.get('/webhook', (req, res) => {
   }
 });
 
-var images = new Object();
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
   let response;
   var file = {};
+  console.log("Images");
+  console.log(images);
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
