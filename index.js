@@ -5,10 +5,12 @@ const
   bodyParser = require('body-parser'),
   request = require('request'),
   pimage = require('pureimage'),
+  fs = require("fs"),
   PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
   app = express().use(bodyParser.json()); // creates express http server
 
 var images = new Object();
+pimage.registerFont('./clockfont.ttf','Clock');
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT, () => console.log('webhook is listening'));
@@ -86,13 +88,15 @@ function handleMessage(sender_psid, received_message) {
   }
   else {
     let caption = received_message.text;
+    let filename = `./${sender_psid}.jpg`;
     response = {
       'attachment': {
         'type': 'image',
         'payload': {'is_reusable': true}
       }
     }
-    file = addCaption(sender_psid, images[sender_psid], caption);
+    addCaption(filename, images[sender_psid], caption);
+    file = fs.createReadStream(filename);
   }
   // Sends the response message
   callSendAPI(sender_psid, response, file);
@@ -140,9 +144,8 @@ function isEmpty(obj) {
   return true;
 }
 
-function addCaption(sender_psid, url, caption) {
+function addCaption(filename, url, caption) {
   var fnt = pimage.registerFont('./clockfont.ttf','Clock');
-  let filename = `./${sender_psid}.jpg`;
   fnt.load(() => {
     request(url).pipe(fs.createWriteStream(filename))
     pimage.decodeJPEGFromStream(fs.createReadStream(filename)).then((img) => {
@@ -153,13 +156,12 @@ function addCaption(sender_psid, url, caption) {
       pimage.encodeJPEGToStream(img, fs.createWriteStream(filename))
     });
   });
-  return fs.createReadStream(filename);
 }
 
 function testPI() {
   var fnt = pimage.registerFont('./clockfont.ttf','Clock');
   fnt.load(() => {
-      pimage.decodeJPEGFromStream(fs.createReadStream('test.jpg')).then((img) => {
+      pimage.decodeJPEGFromStream(fs.createReadStream('C:\\Users\\nmark\\Downloads\\test.jpg')).then((img) => {
         var ctx = img.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.font = `${FONT}pt 'Clock'`;
