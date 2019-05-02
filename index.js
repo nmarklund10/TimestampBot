@@ -89,7 +89,7 @@ function handleMessage(sender_psid, received_message) {
         'payload': {'is_reusable': true}
       }
     }
-    file = addCaption(sender_psid, attachment_url, caption);
+    file = addCaption(sender_psid, images[sender_psid], caption);
   }
   // Sends the response message
   callSendAPI(sender_psid, response, file);
