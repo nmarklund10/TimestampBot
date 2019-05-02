@@ -124,15 +124,14 @@ function callSendAPI(sender_psid, response, file) {
     "json": request_body
   }, (err, res, body) => {
     if (!err) {
-      console.log('message sent!')
+      if (!isEmpty(file)) {
+        delete images[sender_psid];
+        fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
+      }
     } else {
       console.error("Unable to send message:" + err);
     }
   });
-  if (!isEmpty(file)) {
-    delete images[sender_psid];
-    fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
-  }
 }
 
 function isEmpty(obj) {
