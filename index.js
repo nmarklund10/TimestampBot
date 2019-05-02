@@ -131,7 +131,7 @@ function callSendAPI(sender_psid, response, file) {
   });
   if (!isEmpty(file)) {
     delete images[sender_psid];
-    fs.unlink(`./${sender_psid}.jpg`, () => console.log(`./${sender_psid}.jpg deleted!`));
+    fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
   }
 }
 
@@ -145,6 +145,7 @@ function isEmpty(obj) {
 
 function addCaption(filename, caption) {
   var fnt = pimage.registerFont('./clockfont.ttf','Clock');
+  let FONT = 275;
   fnt.load(() => {
     pimage.decodeJPEGFromStream(fs.createReadStream(filename)).then((img) => {
       var ctx = img.getContext('2d');
