@@ -68,7 +68,7 @@ function handleMessage(sender_psid, received_message) {
     response = {
       'text': `Welcome to Timestamp bot.  This bot will
               add a caption to the bottom of a picture
-              you send.\n\nEXAMPLE USAGE:\n9:48\n[YOUR_PICTURE]`
+              you send.\n\nEXAMPLE USAGE:\n9:48 AM\n[YOUR_PICTURE]`
     }
   }
   else if (received_message.attachments) {
