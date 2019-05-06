@@ -26,7 +26,7 @@ app.post('/webhook', (req, res) => {
       // Gets the message. entry.messaging is an array, but
       // will only ever contain one message, so we get index 0
       let webhook_event = entry.messaging[0];
-      console.log(webhook_event);
+      //console.log(webhook_event);
       let sender_psid = webhook_event.sender.id;
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
@@ -135,6 +135,7 @@ function callSendAPI(sender_psid, response, file) {
       if (!isEmpty(file)) {
         delete images[sender_psid];
         fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
+        console.log(res.body);
       }
     } else {
       console.error("Unable to send message:" + err);
