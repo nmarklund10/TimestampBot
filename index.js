@@ -8,7 +8,7 @@ const
   fs = require("fs"),
   PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
   SERVER_URL = 'https://timestamp-bot.herokuapp.com',
-  var sslRedirect = require('heroku-ssl-redirect'),
+  sslRedirect = require('heroku-ssl-redirect'),
   app = express().use(bodyParser.json()); // creates express http server
 
 app.use(sslRedirect());
