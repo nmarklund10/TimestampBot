@@ -7,7 +7,7 @@ const
   pimage = require('pureimage'),
   fs = require("fs"),
   PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
-  SERVER_URL = 'https://timestamp-bot.herokuapp.com'
+  SERVER_URL = 'https://timestamp-bot.herokuapp.com',
   app = express().use(bodyParser.json()); // creates express http server
 
 var images = new Object();
