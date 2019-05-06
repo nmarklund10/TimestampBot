@@ -30,7 +30,6 @@ app.post('/webhook', (req, res) => {
       // Gets the message. entry.messaging is an array, but
       // will only ever contain one message, so we get index 0
       let webhook_event = entry.messaging[0];
-      //console.log(webhook_event);
       let sender_psid = webhook_event.sender.id;
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
@@ -73,7 +72,7 @@ app.get('/webhook', (req, res) => {
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
   let response;
-  var file = {};
+  var file = false;
   let filename = `/tmp/${sender_psid}.jpg`;
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
@@ -93,12 +92,6 @@ function handleMessage(sender_psid, received_message) {
   }
   else {
     let caption = received_message.text;
-    // response = {
-    //   'attachment': {
-    //     'type': 'image',
-    //     'payload': {'is_reusable': true}
-    //   }
-    // }
     response = {
       'attachment': {
         'type': 'image',
@@ -109,7 +102,7 @@ function handleMessage(sender_psid, received_message) {
       }
     }
     addCaption(filename, caption);
-    file = fs.createReadStream(filename);
+    file = true;
   }
   // Sends the response message
   callSendAPI(sender_psid, response, file);
@@ -128,8 +121,6 @@ function callSendAPI(sender_psid, response, file) {
       'id': sender_psid
     },
     'message': response,
-    // 'filedata': file,
-    // 'type': 'image/jpeg'
   }
   // Send the HTTP request to the Messenger Platform
   request({
@@ -139,7 +130,7 @@ function callSendAPI(sender_psid, response, file) {
     "json": request_body
   }, (err, res, body) => {
     if (!err) {
-      if (!isEmpty(file)) {
+      if (file) {
         delete images[sender_psid];
         fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
         console.log(res.body);
@@ -148,14 +139,6 @@ function callSendAPI(sender_psid, response, file) {
       console.error("Unable to send message:" + err);
     }
   });
-}
-
-function isEmpty(obj) {
-  for(var key in obj) {
-      if(obj.hasOwnProperty(key))
-          return false;
-  }
-  return true;
 }
 
 function addCaption(filename, caption) {
@@ -173,44 +156,3 @@ function addCaption(filename, caption) {
     });
   });
 }
-
-function testPI() {
-  var fnt = pimage.registerFont('./clockfont.ttf','Clock');
-  fnt.load(() => {
-      pimage.decodeJPEGFromStream(fs.createReadStream('C:\\Users\\nmark\\Downloads\\test_out.jpg')).then((img) => {
-        var ctx = img.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.font = `${FONT}pt 'Clock'`;
-        ctx.fillText("10:45", 80, img.height * 0.8);
-        pimage.encodeJPEGToStream(img,fs.createWriteStream('C:\\Users\\nmark\\Downloads\\test_out.jpg')).then(() => {
-          console.log("done writing");
-        });
-      });
-  });
-}
-
-// function testJimp() {
-//   var fileName = 'C:\\Users\\nmark\\Downloads\\test.jpg';
-//   var output = 'C:\\Users\\nmark\\Downloads\\test_out.jpg';
-//   var imageCaption = '10:45';
-//   var loadedImage;
-//   jimp.read(fileName)
-//     .then(function (image) {
-//       loadedImage = image;
-//       return jimp.loadFont('C:\\Users\\nmark\\Downloads\\clockfont.fnt');
-//     })
-//     .then(function (font) {
-//       var w = loadedImage.bitmap.width;
-//       var h = loadedImage.bitmap.height;
-//       var textWidth = jimp.measureText(font, imageCaption);
-//       var textHeight = jimp.measureTextHeight(font, imageCaption);
-//       loadedImage.print(
-//         font, w/2 - textWidth/2, h/2 - textHeight/2, imageCaption, textWidth, textHeight).write(output);
-//     })
-//     .catch(function (err) {
-//       console.error(err);
-//     });
-// }
-
-
-
