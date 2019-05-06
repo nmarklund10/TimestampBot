@@ -12,7 +12,7 @@ const
   app = express().use(bodyParser.json()); // creates express http server
 
   app.use(sslRedirect());
-  app.use(express.static('/tmp'))
+  app.use('/tmp', express.static('/tmp'));
 
 var images = new Object();
 pimage.registerFont('./clockfont.ttf','Clock');
@@ -141,7 +141,7 @@ function callSendAPI(sender_psid, response, file) {
     if (!err) {
       if (!isEmpty(file)) {
         delete images[sender_psid];
-        fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
+        //fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
         console.log(res.body);
       }
     } else {
