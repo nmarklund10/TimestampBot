@@ -7,6 +7,7 @@ const
   pimage = require('pureimage'),
   fs = require("fs"),
   PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
+  SERVER_URL = 'https://timestamp-bot.herokuapp.com'
   app = express().use(bodyParser.json()); // creates express http server
 
 var images = new Object();
@@ -88,10 +89,16 @@ function handleMessage(sender_psid, received_message) {
   }
   else {
     let caption = received_message.text;
+    // response = {
+    //   'attachment': {
+    //     'type': 'image',
+    //     'payload': {'is_reusable': true}
+    //   }
+    // }
     response = {
       'attachment': {
-        'type': 'image',
-        'payload': {'is_reusable': true}
+        'type': 'file',
+        'url': SERVER_URL + filename
       }
     }
     addCaption(filename, caption);
@@ -114,8 +121,8 @@ function callSendAPI(sender_psid, response, file) {
       'id': sender_psid
     },
     'message': response,
-    'filedata': file,
-    'type': 'image/jpeg'
+    // 'filedata': file,
+    // 'type': 'image/jpeg'
   }
   // Send the HTTP request to the Messenger Platform
   request({
@@ -127,7 +134,7 @@ function callSendAPI(sender_psid, response, file) {
     if (!err) {
       if (!isEmpty(file)) {
         delete images[sender_psid];
-        //fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
+        fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
       }
     } else {
       console.error("Unable to send message:" + err);
