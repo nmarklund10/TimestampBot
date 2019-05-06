@@ -114,7 +114,8 @@ function callSendAPI(sender_psid, response, file) {
       'id': sender_psid
     },
     'message': response,
-    'filedata': file
+    'filedata': file,
+    'type': 'image/jpeg'
   }
   // Send the HTTP request to the Messenger Platform
   request({
@@ -126,7 +127,7 @@ function callSendAPI(sender_psid, response, file) {
     if (!err) {
       if (!isEmpty(file)) {
         delete images[sender_psid];
-        fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
+        //fs.unlink(`/tmp/${sender_psid}.jpg`, () => console.log(`/tmp/${sender_psid}.jpg deleted!`));
       }
     } else {
       console.error("Unable to send message:" + err);
