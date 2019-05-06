@@ -100,8 +100,11 @@ function handleMessage(sender_psid, received_message) {
     // }
     response = {
       'attachment': {
-        'type': 'file',
-        'url': SERVER_URL + filename
+        'type': 'image',
+        'payload': {
+          'url': SERVER_URL + filename,
+          'is_reusable': true
+        }
       }
     }
     addCaption(filename, caption);
