@@ -11,7 +11,8 @@ const
   sslRedirect = require('heroku-ssl-redirect'),
   app = express().use(bodyParser.json()); // creates express http server
 
-app.use(sslRedirect());
+  app.use(sslRedirect());
+  app.use(express.static('/tmp'))
 
 var images = new Object();
 pimage.registerFont('./clockfont.ttf','Clock');
