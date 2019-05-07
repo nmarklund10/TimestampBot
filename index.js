@@ -9,6 +9,9 @@ const
   PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN,
   SERVER_URL = 'https://timestamp-bot.herokuapp.com',
   sslRedirect = require('heroku-ssl-redirect'),
+  fileType = require('file-type'),
+  rp = require('request-promise'),
+  pngToJpeg = require('png-to-jpeg'),
   app = express().use(bodyParser.json()); // creates express http server
 
   app.use(sslRedirect());
@@ -91,11 +94,23 @@ function handleMessage(sender_psid, received_message) {
     else {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
-      request(url).pipe(fs.createWriteStream(filename))
-      images[sender_psid] = filename;
-      response = {
-        'text': 'Send your caption now!'
-      }
+      rp(url).then((bytes) => {
+        let type = fileType(bytes).mime;
+        if (type == 'image/png' || type == 'image/jpeg') {
+          if (type == 'image/png') {
+            bytes = pngToJpeg()(bytes);
+          }
+          fs.writeFileSync(filename, bytes);
+          images[sender_psid] = filename;
+          response = {
+            'text': 'Send your caption now!'
+          }
+        } else {
+          response = {
+            'text': 'Image must be a jpeg or png file.'
+          }
+        }
+      });
     }
   }
   else {
