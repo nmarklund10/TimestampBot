@@ -12,6 +12,7 @@ const
   fileType = require('file-type'),
   rp = require('request-promise'),
   pngToJpeg = require('png-to-jpeg'),
+  stream = require('stream'),
   app = express().use(bodyParser.json()); // creates express http server
 
   app.use(sslRedirect());
@@ -95,7 +96,7 @@ function handleMessage(sender_psid, received_message) {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
       request(url, function(response) {
-        var bytes = new Stream();
+        var bytes = new stream();
         response.on('data', function(chunk) {
           bytes.push(chunk);
         });
