@@ -31,7 +31,6 @@ app.post('/webhook', (req, res) => {
       // will only ever contain one message, so we get index 0
       let webhook_event = entry.messaging[0];
       let sender_psid = webhook_event.sender.id;
-      console.log(entry.messaging[0])
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
       if (webhook_event.message) {
@@ -74,7 +73,8 @@ app.get('/webhook', (req, res) => {
 function handleMessage(sender_psid, received_message) {
   let response;
   var file = false;
-  let filename = `/tmp/${sender_psid}.jpg`;
+  let msg_id = received_message.mid;
+  let filename = `/tmp/${msg_id}.jpg`;
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
@@ -92,7 +92,7 @@ function handleMessage(sender_psid, received_message) {
     else {
       let url = received_message.attachments[0].payload.url;
       request(url).pipe(fs.createWriteStream(filename))
-      images[sender_psid] = 1;
+      images[sender_psid] = msg_id;
       response = {
         'text': 'Send your caption now!'
       }
