@@ -11,8 +11,6 @@ const
   sslRedirect = require('heroku-ssl-redirect'),
   fileType = require('file-type'),
   pngToJpeg = require('png-to-jpeg'),
-  http = require('http'),
-  stream = require('stream'),
   app = express().use(bodyParser.json()); // creates express http server
 
   app.use(sslRedirect());
@@ -95,33 +93,25 @@ function handleMessage(sender_psid, received_message) {
     else {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
-      http.get(url, (response) => {
-        var bytes = new stream();
-        response.on('data', (chunk) => {
-          bytes.push(chunk);
-        });
-        response.on('end', () => {
-          let type = fileType(bytes).mime;
-          if (type == 'image/png' || type == 'image/jpeg') {
-            if (type == 'image/png') {
-              bytes = pngToJpeg()(bytes);
-            }
-            fs.writeFileSync(filename, bytes.read());
-            images[sender_psid] = filename;
-            response = {
-              'text': 'Send your caption now!'
-            }
-          } else if (type != 'image/jpeg') {
-            response = {
-              'text': 'Image must be a jpeg or png file.'
-            }
-          }
-        });
-      }).on('error', (err) => {
-        response = {
-          'text': 'Error occured'
+      request(url).pipe(fs.createWriteStream(filename));
+      let bytes = fs.createReadStream(filename);
+      let type = fileType(bytes).mime;
+      if (type == 'image/png' || type == 'image/jpeg') {
+        if (type == 'image/png') {
+          pngToJpeg({quality: 100})(bytes).then((output) =>
+            fs.writeFileSync(filename, output)
+          );
         }
-      });
+        images[sender_psid] = filename;
+        response = {
+          'text': 'Send your caption now!'
+        }
+      }
+      else {
+        response = {
+          'text': 'Image must be a jpeg or png file.'
+        }
+      }
     }
   }
   else {
