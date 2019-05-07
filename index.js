@@ -102,22 +102,25 @@ function handleMessage(sender_psid, received_message) {
         });
         response.on('end', () => {
           let type = fileType(bytes).mime;
-          if (type == 'image/png') {
-            bytes = pngToJpeg()(bytes);
+          if (type == 'image/png' || type == 'image/jpeg') {
+            if (type == 'image/png') {
+              bytes = pngToJpeg()(bytes);
+            }
+            fs.writeFileSync(filename, bytes.read());
+            images[sender_psid] = filename;
+            response = {
+              'text': 'Send your caption now!'
+            }
           } else if (type != 'image/jpeg') {
             response = {
               'text': 'Image must be a jpeg or png file.'
             }
-            break;
-          }
-          fs.writeFileSync(filename, bytes.read());
-          images[sender_psid] = filename;
-          response = {
-            'text': 'Send your caption now!'
           }
         });
-      }).on("error", (err) => {
-        console.log("Error: " + err.message);
+      }).on('error', (err) => {
+        response = {
+          'text': 'Error occured'
+        }
       });
     }
   }
