@@ -74,7 +74,6 @@ function handleMessage(sender_psid, received_message) {
   let response;
   var file = false;
   let msg_id = received_message.mid;
-  let filename = `/tmp/${msg_id}.jpg`;
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
@@ -91,8 +90,9 @@ function handleMessage(sender_psid, received_message) {
     }
     else {
       let url = received_message.attachments[0].payload.url;
+      let filename = `/tmp/${msg_id}.jpg`;
       request(url).pipe(fs.createWriteStream(filename))
-      images[sender_psid] = msg_id;
+      images[sender_psid] = filename;
       response = {
         'text': 'Send your caption now!'
       }
@@ -104,12 +104,12 @@ function handleMessage(sender_psid, received_message) {
       'attachment': {
         'type': 'image',
         'payload': {
-          'url': SERVER_URL + filename,
+          'url': SERVER_URL + images[sender_psid],
           'is_reusable': true
         }
       }
     }
-    addCaption(filename, caption);
+    addCaption(images[sender_psid], caption);
     file = true;
   }
   // Sends the response message
@@ -139,7 +139,7 @@ function callSendAPI(sender_psid, response, file) {
   }, (err, res, body) => {
     if (!err) {
       if (file) {
-        fs.unlink(`/tmp/${images[sender_psid]}.jpg`, () => console.log(`/tmp/${images[sender_psid]}.jpg deleted!`));
+        fs.unlink(`${images[sender_psid]}`, () => console.log(`${images[sender_psid]} deleted!`));
         delete images[sender_psid];
         console.log(res.body);
       }
