@@ -10,7 +10,6 @@ const
   SERVER_URL = 'https://timestamp-bot.herokuapp.com',
   sslRedirect = require('heroku-ssl-redirect'),
   fileType = require('file-type'),
-  rp = require('request-promise'),
   pngToJpeg = require('png-to-jpeg'),
   stream = require('stream'),
   app = express().use(bodyParser.json()); // creates express http server
