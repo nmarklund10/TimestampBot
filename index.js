@@ -139,7 +139,8 @@ function callSendAPI(sender_psid, response, file) {
   }, (err, res, body) => {
     if (!err) {
       if (file) {
-        fs.unlink(`${images[sender_psid]}`, () => console.log(`${images[sender_psid]} deleted!`));
+        let filename = images[sender_psid]
+        fs.unlink(filename, () => console.log(`${filename} deleted!`));
         delete images[sender_psid];
         console.log(res.body);
       }
