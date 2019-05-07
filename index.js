@@ -76,6 +76,7 @@ function handleMessage(sender_psid, received_message) {
   let response;
   var file = false;
   let msg_id = received_message.mid;
+  console.log(images)
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
@@ -84,7 +85,6 @@ function handleMessage(sender_psid, received_message) {
               'add a caption to the bottom of a picture ' +
               'you send. Start by sending a pic!'
     }
-    console.log('hi')
   } else if (received_message.attachments) {
     if (received_message.attachments[0].type != 'image') {
       response = {
