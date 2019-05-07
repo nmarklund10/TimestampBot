@@ -84,6 +84,7 @@ function handleMessage(sender_psid, received_message) {
               'add a caption to the bottom of a picture ' +
               'you send. Start by sending a pic!'
     }
+    console.log('hi')
   } else if (received_message.attachments) {
     if (received_message.attachments[0].type != 'image') {
       response = {
