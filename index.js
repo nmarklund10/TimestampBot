@@ -31,6 +31,7 @@ app.post('/webhook', (req, res) => {
       // will only ever contain one message, so we get index 0
       let webhook_event = entry.messaging[0];
       let sender_psid = webhook_event.sender.id;
+      console.log(entry.messaging[0])
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
       if (webhook_event.message) {
@@ -78,16 +79,23 @@ function handleMessage(sender_psid, received_message) {
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
     response = {
-      'text': "Welcome to Timestamp bot. This bot will \
-              add a caption to the bottom of a picture \
-              you send. Start by sending a pic!"
+      'text': 'Welcome to Timestamp bot. This bot will '  +
+              'add a caption to the bottom of a picture ' +
+              'you send. Start by sending a pic!'
     }
   } else if (received_message.attachments) {
-    let url = received_message.attachments[0].payload.url;
-    request(url).pipe(fs.createWriteStream(filename))
-    images[sender_psid] = 1;
-    response = {
-      'text': 'Send your caption now!'
+    if (received_message.attachments[0].type != 'image') {
+      response = {
+        'text': 'Image format not recognized!'
+      }
+    }
+    else {
+      let url = received_message.attachments[0].payload.url;
+      request(url).pipe(fs.createWriteStream(filename))
+      images[sender_psid] = 1;
+      response = {
+        'text': 'Send your caption now!'
+      }
     }
   }
   else {
