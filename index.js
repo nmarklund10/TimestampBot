@@ -94,24 +94,28 @@ function handleMessage(sender_psid, received_message) {
     else {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
-      rp(url).then((bytes) => {
-        bytes = Buffer.from(bytes)
-        let type = fileType(bytes).mime;
-        if (type == 'image/png' || type == 'image/jpeg') {
+      request(url, function(response) {
+        var bytes = new Stream();
+        response.on('data', function(chunk) {
+          bytes.push(chunk);
+        });
+        response.on('end', function() {
+          let type = fileType(bytes).mime;
           if (type == 'image/png') {
             bytes = pngToJpeg()(bytes);
+          } else if (type != 'image/jpeg') {
+            response = {
+              'text': 'Image must be a jpeg or png file.'
+            }
+            break;
           }
-          fs.writeFileSync(filename, bytes);
+          fs.writeFileSync(filename, bytes.read());
           images[sender_psid] = filename;
           response = {
             'text': 'Send your caption now!'
           }
-        } else {
-          response = {
-            'text': 'Image must be a jpeg or png file.'
-          }
-        }
-      });
+        });
+      }).end();
     }
   }
   else {
