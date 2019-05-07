@@ -11,6 +11,7 @@ const
   sslRedirect = require('heroku-ssl-redirect'),
   fileType = require('file-type'),
   pngToJpeg = require('png-to-jpeg'),
+  http = require('http'),
   stream = require('stream'),
   app = express().use(bodyParser.json()); // creates express http server
 
@@ -94,12 +95,12 @@ function handleMessage(sender_psid, received_message) {
     else {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
-      request(url, function(response) {
+      http.get(url, (response) => {
         var bytes = new stream();
-        response.on('data', function(chunk) {
+        response.on('data', (chunk) => {
           bytes.push(chunk);
         });
-        response.on('end', function() {
+        response.on('end', () => {
           let type = fileType(bytes).mime;
           if (type == 'image/png') {
             bytes = pngToJpeg()(bytes);
@@ -115,7 +116,9 @@ function handleMessage(sender_psid, received_message) {
             'text': 'Send your caption now!'
           }
         });
-      }).end();
+      }).on("error", (err) => {
+        console.log("Error: " + err.message);
+      });
     }
   }
   else {
