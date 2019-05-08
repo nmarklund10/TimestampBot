@@ -96,7 +96,7 @@ function handleMessage(sender_psid, received_message) {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
       request(url).pipe(fs.createWriteStream(filename));
-      let bytes = fs.createReadStream(filename);
+      let bytes = fs.readFileSync(filename);
       let type = fileType(bytes).mime;
       if (type == 'image/png' || type == 'image/jpeg') {
         if (type == 'image/png') {
