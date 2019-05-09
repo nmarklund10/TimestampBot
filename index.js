@@ -163,7 +163,6 @@ function callSendAPI(sender_psid, response, file) {
         let filename = images[sender_psid]
         fs.unlink(filename, () => console.log(`${filename} deleted!`));
         delete images[sender_psid];
-        console.log(res.body);
       }
     } else {
       console.error("Unable to send message:" + err);
