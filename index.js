@@ -77,6 +77,7 @@ function handleMessage(sender_psid, received_message) {
   var file = false;
   let msg_id = received_message.mid;
   console.log(received_message)
+  console.log(received_message.attachments.payload)
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
