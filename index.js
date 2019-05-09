@@ -84,34 +84,40 @@ function handleMessage(sender_psid, received_message) {
               'add a caption to the bottom of a picture ' +
               'you send. Start by sending a pic!'
     }
+    callSendAPI(sender_psid, response, file);
   } else if (received_message.attachments) {
     if (received_message.attachments[0].type != 'image') {
       response = {
         'text': 'Image format not recognized!'
       }
+      callSendAPI(sender_psid, response, file);
     }
     else {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
-      request(url).pipe(fs.writeFileSync(filename));
-      let bytes = fs.readFileSync(filename);
-      let type = fileType(bytes).mime;
-      if (type == 'image/png' || type == 'image/jpeg') {
-        if (type == 'image/png') {
-          pngToJpeg({quality: 100})(bytes).then((output) =>
-            fs.writeFileSync(filename, output)
-          );
+      fileStream = fs.createWriteStream(filename)
+      request(url).pipe(fileStream);
+      fileStream.on('finish', () => {
+        let bytes = fs.readFileSync(filename);
+        let type = fileType(bytes).mime;
+        if (type == 'image/png' || type == 'image/jpeg') {
+          if (type == 'image/png') {
+            pngToJpeg({quality: 100})(bytes).then((output) =>
+              fs.writeFileSync(filename, output)
+            );
+          }
+          images[sender_psid] = filename;
+          response = {
+            'text': 'Send your caption now!'
+          }
         }
-        images[sender_psid] = filename;
-        response = {
-          'text': 'Send your caption now!'
+        else {
+          response = {
+            'text': 'Image must be a jpeg or png file.'
+          }
         }
-      }
-      else {
-        response = {
-          'text': 'Image must be a jpeg or png file.'
-        }
-      }
+        callSendAPI(sender_psid, response, file);
+      });
     }
   }
   else {
@@ -127,9 +133,8 @@ function handleMessage(sender_psid, received_message) {
     }
     addCaption(images[sender_psid], caption);
     file = true;
+    callSendAPI(sender_psid, response, file);
   }
-  // Sends the response message
-  callSendAPI(sender_psid, response, file);
 }
 
 // Handles messaging_postbacks events
