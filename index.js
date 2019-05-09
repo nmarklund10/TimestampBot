@@ -35,7 +35,6 @@ app.post('/webhook', (req, res) => {
       let sender_psid = webhook_event.sender.id;
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
-      console.log(webhook_event);
       if (webhook_event.message) {
         handleMessage(sender_psid, webhook_event.message);
       } else if (webhook_event.postback) {
@@ -77,7 +76,7 @@ function handleMessage(sender_psid, received_message) {
   let response;
   var file = false;
   let msg_id = received_message.mid;
-  console.log(images)
+  console.log(received_message)
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
