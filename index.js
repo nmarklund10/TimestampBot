@@ -76,8 +76,6 @@ function handleMessage(sender_psid, received_message) {
   let response;
   var file = false;
   let msg_id = received_message.mid;
-  console.log(received_message)
-  console.log(received_message.attachments[0].payload)
   // Check if the message contains text
   if (!images[sender_psid] && !received_message.attachments) {
     // Create the payload for a basic text message
@@ -95,7 +93,7 @@ function handleMessage(sender_psid, received_message) {
     else {
       let url = received_message.attachments[0].payload.url;
       let filename = `/tmp/${msg_id}.jpg`;
-      request(url).pipe(fs.createWriteStream(filename));
+      request(url).pipe(fs.writeFileSync(filename));
       let bytes = fs.readFileSync(filename);
       let type = fileType(bytes).mime;
       if (type == 'image/png' || type == 'image/jpeg') {
