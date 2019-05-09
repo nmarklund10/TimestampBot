@@ -97,8 +97,8 @@ function handleMessage(sender_psid, received_message) {
       let filename = `/tmp/${msg_id}.jpg`;
       request(url).pipe(fs.createWriteStream(filename));
       let bytes = fs.readFileSync(filename);
+      console.log(fileType(bytes))
       let type = fileType(bytes).mime;
-      console.log(type)
       if (type == 'image/png' || type == 'image/jpeg') {
         if (type == 'image/png') {
           pngToJpeg({quality: 100})(bytes).then((output) =>
